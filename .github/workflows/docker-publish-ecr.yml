@@ -34,5 +34,6 @@ jobs:
         ECR_REPOSITORY: km_predict
       shell: bash -l {0}
       run: |
+        cd  docker
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY --all-tags
