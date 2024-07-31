@@ -74,7 +74,7 @@ function process() {
     echo "Uploading results to S3"
     rm ${wd}/prediction/${input_product}/${input_product_short}.tif
     mv ${wd}/prediction/${input_product}/${input_product_short}.compressed.tif ${wd}/prediction/${input_product}/${input_product_short}.tif
-    aws s3 cp --no-progress --recursive ${wd}/prediction/${input_product}/ ${dir_path_out}${input_product}/
+    aws s3 cp --no-progress ${wd}/prediction/${input_product}/${input_product_short}.tif ${dir_path_out}${input_product}/
     else
     echo "python checks failed.Exiting."
     fi
