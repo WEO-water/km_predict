@@ -7,6 +7,7 @@ if [ "$#" -lt 2 ]; then
     echo "Usage: km_s3 PRODUCT_NAME OUTPUT_S3_PATH [OPTIONS]"
     echo "  PRODUCT_NAME - Sentinel-2 product name. For example, S2A_MSIL2A_20200509T094041_N0214_R036_T35VME_20200509T111504"
     echo "  OUTPUT_S3_PATH - S3 path to store the results in. For example, s3://kappamask/km_pred_out/"
+    echo "  SKIP_SUBFOLDERS_UPLOAD - Set to True to skip uploading all sub folders / sub tiles to S3"
     echo "  OPTIONS - Additional arguments for km_predict. For example, -cpu, -g"
     exit 1
 fi
@@ -15,6 +16,7 @@ wd=/data
 input_product=$1
 input_product_short=$(echo "$1" | sed 's@S2[AB]\+_MSI\(L[12AC]\+\)_\([0-9T]\+\)_N[0-9]\+_R[0-9]\+_\(T[0-9A-Z]\+\)_[0-9T]\+@\1_\3_\2_KZ_10m@')
 path_config=/home/km_predict/config/config.json
+skip_upload=${3:-'TRUE'}
 
 # Ensure that the output path has a slash at the end.
 re='.*/$'
@@ -71,10 +73,16 @@ function process() {
     gdal_translate -co COMPRESS=LZMA -co TILED=YES ${wd}/prediction/${input_product}/${input_product_short}.tif ${wd}/prediction/${input_product}/${input_product_short}.compressed.tif
     echo "Creating overviews"
     gdaladdo ${wd}/prediction/${input_product}/${input_product_short}.compressed.tif 2 4 8 16 32 64 128 256
-    echo "Uploading results to S3"
     rm ${wd}/prediction/${input_product}/${input_product_short}.tif
     mv ${wd}/prediction/${input_product}/${input_product_short}.compressed.tif ${wd}/prediction/${input_product}/${input_product_short}.tif
+    if [ ${skip_upload} -eq "TRUE" ]
+    then 
+    echo "Uploading only final TIF to S3"
     aws s3 cp --no-progress ${wd}/prediction/${input_product}/${input_product_short}.tif ${dir_path_out}${input_product}/
+    else
+    echo "Uploading all sub folders to S3"
+    aws s3 cp --no-progress --recursive ${wd}/prediction/${input_product}/ ${dir_path_out}${input_product}/
+    fi
     else
     echo "python checks failed.Exiting."
     fi
