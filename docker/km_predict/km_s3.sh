@@ -21,7 +21,7 @@ skip_upload=${3:-'FALSE'}
 # Ensure that the output path has a slash at the end.
 re='.*/$'
 dir_path_out=$2
-[[ ${dir_path_out} =~ ${re} ]] || dir_path_out+='/'
+#[[ ${dir_path_out} =~ ${re} ]] || dir_path_out+='/'
 
 # L1C or L2A product?
 if [[ "${input_product}" =~ "MSIL2A" ]]; then
@@ -58,6 +58,7 @@ function config_aws() {
     aws configure set aws_secret_access_key ${AWS_SECRET_KEY}
 }
 
+
 function process() {
     echo "Downloading ${input_product}"
     python3 /home/get_s3.py ${input_product} ${wd}/
@@ -75,13 +76,27 @@ function process() {
     gdaladdo ${wd}/prediction/${input_product}/${input_product_short}.compressed.tif 2 4 8 16 32 64 128 256
     rm ${wd}/prediction/${input_product}/${input_product_short}.tif
     mv ${wd}/prediction/${input_product}/${input_product_short}.compressed.tif ${wd}/prediction/${input_product}/${input_product_short}.tif
-    if [ ${skip_upload} -eq "TRUE" ]
-    then 
+    if [[ ${skip_upload} == "TRUE" ]]
+    then
     echo "Uploading only final TIF to S3"
-    aws s3 cp --no-progress ${wd}/prediction/${input_product}/${input_product_short}.tif ${dir_path_out}${input_product}/
+        if [[ ${dir_path_out:0:2} == "s3" ]]
+        then
+        aws s3 cp --no-progress ${wd}/prediction/${input_product}/${input_product_short}.tif ${dir_path_out}${input_product}/
+        fi
+        if [[ ${dir_path_out:0:2} == "gs" ]]
+        then
+        gsutil cp ${wd}/prediction/${input_product}/${input_product_short}.tif ${dir_path_out}${input_product}/
+        fi
     else
     echo "Uploading all sub folders to S3"
-    aws s3 cp --no-progress --recursive ${wd}/prediction/${input_product}/ ${dir_path_out}${input_product}/
+        if [[ ${dir_path_out:0:2} == "s3" ]]
+        then
+        aws s3 cp --no-progress --recursive ${wd}/prediction/${input_product}/ ${dir_path_out}${input_product}/
+        fi
+        if [[ ${dir_path_out:0:2} == "gs" ]]
+        then
+        gsutil cp -r ${wd}/prediction/${input_product}/ ${dir_path_out}${input_product}/
+        fi
     fi
     else
     echo "python checks failed.Exiting."
