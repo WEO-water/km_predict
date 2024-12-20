@@ -37,6 +37,7 @@ jobs:
 
       - name: Build and Push Docker Image
         run: |
+          cd docker/km_predict
           docker build -t ${{ env.REGION }}-docker.pkg.dev/${{ secrets.PROD_GCP_PROJECT }}/${{ env.REPO }}/${{ env.IMAGE }}:latest .
           docker push ${{ env.REGION }}-docker.pkg.dev/${{ secrets.PROD_GCP_PROJECT }}/${{ env.REPO }}/${{ env.IMAGE }}:latest
 
