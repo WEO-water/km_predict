@@ -5,6 +5,7 @@ ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 
 WORKDIR /home
 
+
 # Install pre-dependencies
 RUN apt-get update --fix-missing && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y \
@@ -16,6 +17,7 @@ RUN apt-get update --fix-missing && \
 
 # Install cget
 RUN pip3 install cget
+RUN pip3 install tensorflow
 
 # Get cm-vsm
 RUN git clone --recurse-submodules https://github.com/kappazeta/cm-vsm.git && \
@@ -90,5 +92,3 @@ RUN chmod +x /home/km_s3.sh /home/km_local.sh /home/km_test.sh && \
     ln -s /home/km_test.sh /usr/local/bin/km_test
 
 ENTRYPOINT ["km_s3"]
-# ENTRYPOINT ["km_test"]
-# ENTRYPOINT ["km_local"]
