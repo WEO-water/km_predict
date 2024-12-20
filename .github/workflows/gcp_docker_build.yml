@@ -2,8 +2,8 @@ name: Deploy to Artifact Registry
 
 on:
   push:
-    #branches:
-     # - gs-object-store
+    branches:
+      - gcp_deploy
     tags:
       - 'dev-docker*'
 
