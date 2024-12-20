@@ -21,7 +21,7 @@ skip_upload=${3:-'FALSE'}
 # Ensure that the output path has a slash at the end.
 re='.*/$'
 dir_path_out=$2
-#[[ ${dir_path_out} =~ ${re} ]] || dir_path_out+='/'
+[[ ${dir_path_out} =~ ${re} ]] || dir_path_out+='/'
 
 # L1C or L2A product?
 if [[ "${input_product}" =~ "MSIL2A" ]]; then
