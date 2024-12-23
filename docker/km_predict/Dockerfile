@@ -32,6 +32,9 @@ RUN cd /home/cm-vsm/vsm/build && \
     make -j4 && \
     make install
 
+FROM tensorflow/tensorflow:2.0.0-gpu
+RUN pip install --no-cache-dir tensorflow-gpu
+
 # ==== Runtime ====
 FROM tensorflow/tensorflow:2.15.0 as runtime
 
@@ -78,8 +81,9 @@ RUN python3 -m pip install --upgrade pip
 # Install pip dependencies in smaller steps to debug potential issues
 RUN pip3 install --no-cache-dir numpy==1.23.4 pandas netcdf4==1.6.5 rasterio==1.3.9
 RUN pip3 install --no-cache-dir scikit-image==0.22.0 keras matplotlib pytest==7.4.3 scikit-learn==1.3.2 pillow==10.1.0
-RUN pip3 install --no-cache-dir tensorflow
 RUN pip3 install --no-cache-dir boto3 sentinelhub[AWS]
+
+
 
 
 # Get km-predict
