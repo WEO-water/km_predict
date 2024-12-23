@@ -17,7 +17,6 @@ RUN apt-get update --fix-missing && \
 
 # Install cget
 RUN pip3 install cget
-RUN pip3 install tensorflow
 
 # Get cm-vsm
 RUN git clone --recurse-submodules https://github.com/kappazeta/cm-vsm.git && \
@@ -76,8 +75,12 @@ RUN apt-get update && apt-get install -y \
 RUN python3 -m pip install --upgrade pip
 # NOTE:: Starting from pillow==10.2.0, TiffImagePlugin throws
 #   NotImplementedError: multistrip support not yet implemented
-RUN pip3 install --no-cache-dir scikit-image==0.22.0 netcdf4==1.6.5 rasterio==1.3.9 \
-    pytest==7.4.3 scikit-learn==1.3.2 pillow==10.1.0 boto3 sentinelhub[AWS]
+# Install pip dependencies in smaller steps to debug potential issues
+RUN pip3 install --no-cache-dir numpy==1.23.4 pandas netcdf4==1.6.5 rasterio==1.3.9
+RUN pip3 install --no-cache-dir scikit-image==0.22.0 keras matplotlib pytest==7.4.3 scikit-learn==1.3.2 pillow==10.1.0
+RUN pip3 install --no-cache-dir tensorflow
+RUN pip3 install --no-cache-dir boto3 sentinelhub[AWS]
+
 
 # Get km-predict
 RUN git clone --recurse-submodules https://github.com/kappazeta/km_predict.git && cd km_predict && git checkout v2.3
