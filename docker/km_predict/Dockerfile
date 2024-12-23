@@ -5,7 +5,6 @@ ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 
 WORKDIR /home
 
-
 # Install pre-dependencies
 RUN apt-get update --fix-missing && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y \
@@ -31,9 +30,6 @@ RUN cd /home/cm-vsm/vsm/build && \
 RUN cd /home/cm-vsm/vsm/build && \
     make -j4 && \
     make install
-
-FROM tensorflow/tensorflow:2.0.0-gpu
-RUN pip install --no-cache-dir tensorflow-gpu
 
 # ==== Runtime ====
 FROM tensorflow/tensorflow:2.15.0 as runtime
@@ -61,27 +57,11 @@ RUN wget "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -O /home/aws
     rm /home/awscliv2.zip && \
     ./aws/install && \
     rm -rf ./aws
-
-# Install dependencies and the Google Cloud SDK
-RUN apt-get update && apt-get install -y \
-    curl \
-    apt-transport-https \
-    ca-certificates \
-    gnupg && \
-    echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
-    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add - && \
-    apt-get update && apt-get install -y \
-    google-cloud-sdk && \
-    rm -rf /var/lib/apt/lists/*
-
-# Install dependencies.
+    
+    # Install dependencies.
 RUN python3 -m pip install --upgrade pip
-# NOTE:: Starting from pillow==10.2.0, TiffImagePlugin throws
-#   NotImplementedError: multistrip support not yet implemented
-# Install pip dependencies in smaller steps to debug potential issues
-RUN pip3 install --no-cache-dir numpy==1.23.4 pandas netcdf4==1.6.5 rasterio==1.3.9
-RUN pip3 install --no-cache-dir scikit-image==0.22.0 keras matplotlib pytest==7.4.3 scikit-learn==1.3.2 pillow==10.1.0
-RUN pip3 install --no-cache-dir boto3 sentinelhub[AWS]
+RUN pip3 install --no-cache-dir scikit-image==0.22.0 netcdf4==1.6.5 pandas numpy==1.23.4 rasterio==1.3.9
+RUN pip3 install --no-cache-dir keras matplotlib pytest==7.4.3  scikit-learn==1.3.2 pillow==10.1.0 boto3 sentinelhub[AWS]
 
 
 
@@ -99,3 +79,14 @@ RUN chmod +x /home/km_s3.sh /home/km_local.sh /home/km_test.sh && \
     ln -s /home/km_test.sh /usr/local/bin/km_test
 
 ENTRYPOINT ["km_s3"]
+
+FROM nvidia/cuda:11.3.1-cudnn8-devel-ubuntu20.04
+
+# Install additional packages
+RUN apt-get -y update && \
+         apt-get -y upgrade && \
+         apt-get install -y python3-pip python3-dev
+
+RUN apt-get install -y git
+
+RUN pip3 install tensorflow
