@@ -46,6 +46,22 @@ RUN apt-get update --fix-missing && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+# Install Google SDK dependencies
+RUN apt-get update && apt-get install -y \
+    curl apt-transport-https ca-certificates gnupg \
+    && apt-get clean
+
+# Add Google Cloud SDK package source
+RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
+    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
+
+# Install Google Cloud SDK
+RUN apt-get update && apt-get install -y google-cloud-sdk
+
+# Verify installation
+RUN gcloud --version
+
+
 # Copy binaries.
 COPY --from=builder /usr/bin/ /usr/bin/
 COPY --from=builder /usr/lib/ /usr/lib/
@@ -62,6 +78,7 @@ RUN wget "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -O /home/aws
 RUN python3 -m pip install --upgrade pip
 RUN pip3 install --no-cache-dir scikit-image==0.22.0 netcdf4==1.6.5 pandas numpy==1.23.4 rasterio==1.3.9
 RUN pip3 install --no-cache-dir keras matplotlib pytest==7.4.3  scikit-learn==1.3.2 pillow==10.1.0 boto3 sentinelhub[AWS]
+RUN pip3 install tensorflow
 
 
 
@@ -79,14 +96,3 @@ RUN chmod +x /home/km_s3.sh /home/km_local.sh /home/km_test.sh && \
     ln -s /home/km_test.sh /usr/local/bin/km_test
 
 ENTRYPOINT ["km_s3"]
-
-FROM nvidia/cuda:11.3.1-cudnn8-devel-ubuntu20.04
-
-# Install additional packages
-RUN apt-get -y update && \
-         apt-get -y upgrade && \
-         apt-get install -y python3-pip python3-dev
-
-RUN apt-get install -y git
-
-RUN pip3 install tensorflow
