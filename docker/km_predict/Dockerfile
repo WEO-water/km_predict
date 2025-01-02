@@ -76,10 +76,10 @@ RUN wget "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -O /home/aws
     
     # Install dependencies.
 RUN python3 -m pip install --upgrade pip
-RUN pip3 install --no-cache-dir scikit-image==0.22.0 netcdf4==1.6.5 pandas numpy==1.23.4 rasterio==1.3.9
-RUN pip3 install --no-cache-dir keras matplotlib pytest==7.4.3  scikit-learn==1.3.2 pillow==10.1.0 boto3 sentinelhub[AWS]
-RUN pip3 install tensorflow
-
+RUN pip3 install --no-cache-dir scikit-image netcdf4 pandas numpy==1.23.4 rasterio
+RUN pip3 install --no-cache-dir keras matplotlib pytest  scikit-learn pillow boto3 sentinelhub[AWS]
+RUN pip3 install --no-cache-dir google-cloud-storage==2.18.2
+RUN pip3 install --no-cache-dir tensorflow
 
 
 
