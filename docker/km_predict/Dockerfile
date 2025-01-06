@@ -4,7 +4,7 @@ FROM tensorflow/tensorflow:2.15.0 AS builder
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 
 WORKDIR /home
-RUN apt-get update && apt-get upgrade
+RUN apt-get update && apt-get upgrade -y
 # Install pre-dependencies
 RUN apt-get update --fix-missing && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y \
@@ -39,7 +39,7 @@ ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/:/usr/local/lib/x86_64-linux
 
 WORKDIR /home
 
-RUN apt-get update && apt-get upgrade
+RUN apt-get update && apt-get upgrade -y
 # Install system dependencies.
 RUN apt-get update --fix-missing && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y \
