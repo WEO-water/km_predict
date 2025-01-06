@@ -80,6 +80,8 @@ RUN python3 -m pip install --upgrade pip
 RUN pip3 install --no-cache-dir google-cloud-storage==2.18.2
 RUN pip3 install --no-cache-dir scikit-image==0.22.0 netcdf4==1.6.5 rasterio==1.3.9 \
     pytest==7.4.3 scikit-learn==1.3.2 pillow==10.1.0 boto3 sentinelhub[AWS]
+RUN pip3 install tensorflow==2.15.0
+RUN pip3 install numpy==1.26.2
 
 
 
