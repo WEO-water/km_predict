@@ -4,7 +4,7 @@ FROM tensorflow/tensorflow:2.15.0 AS builder
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 
 WORKDIR /home
-
+RUN apt-get update && apt-get upgrade
 # Install pre-dependencies
 RUN apt-get update --fix-missing && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y \
@@ -39,6 +39,7 @@ ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/:/usr/local/lib/x86_64-linux
 
 WORKDIR /home
 
+RUN apt-get update && apt-get upgrade
 # Install system dependencies.
 RUN apt-get update --fix-missing && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y \
@@ -76,10 +77,9 @@ RUN wget "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -O /home/aws
     
     # Install dependencies.
 RUN python3 -m pip install --upgrade pip
-RUN pip3 install --no-cache-dir scikit-image netcdf4 pandas numpy==1.23.4 rasterio
-RUN pip3 install --no-cache-dir keras matplotlib pytest  scikit-learn pillow boto3 sentinelhub[AWS]
 RUN pip3 install --no-cache-dir google-cloud-storage==2.18.2
-RUN pip3 install --no-cache-dir tensorflow
+RUN pip3 install --no-cache-dir scikit-image==0.22.0 netcdf4==1.6.5 rasterio==1.3.9 \
+    pytest==7.4.3 scikit-learn==1.3.2 pillow==10.1.0 boto3 sentinelhub[AWS]
 
 
 
