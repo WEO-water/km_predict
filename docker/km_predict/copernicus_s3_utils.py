@@ -30,7 +30,6 @@ COPERNICUS_OAUTH_SECRET_ACCESS_KEY = os.environ.get(
     "COPERNICUS_OAUTH_SECRET_ACCESS_KEY"
 )
 
-
 CDSE_TOKEN_URL = "https://identity.dataspace.copernicus.eu/auth/realms/CDSE/protocol/openid-connect/token"
 CDSE_BASE_URL = "https://sh.dataspace.copernicus.eu"
 

@@ -1,0 +1,43 @@
+name: Deploy to Artifact Registry
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'dev-docker*'
+
+env:
+  PROJECT_ID: ${{ secrets.PROD_GCP_PROJECT }}
+  REGION: 'europe-north1' # TODO: update to your region
+  IMAGE: 'km-predict-image' # TODO: update to your service name
+  REPO : 'prod-green-nexus-weo-repo'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.PROD_GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.PROD_GCP_SERVICE_ACCOUNT }}
+
+      - name: Configure Docker
+        run: gcloud auth configure-docker europe-north1-docker.pkg.dev
+
+      - name: Build and Push Docker Image
+        run: |
+          cd docker/km_predict
+          docker build -t ${{ env.REGION }}-docker.pkg.dev/${{ secrets.PROD_GCP_PROJECT }}/${{ env.REPO }}/${{ env.IMAGE }}:latest .
+          docker push ${{ env.REGION }}-docker.pkg.dev/${{ secrets.PROD_GCP_PROJECT }}/${{ env.REPO }}/${{ env.IMAGE }}:latest
+

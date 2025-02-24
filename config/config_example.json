@@ -6,8 +6,8 @@
     }
   },
   "folder_name": "data",
-  "product_name": "S2A_MSIL1C_20210608T103021_N0300_R108_T31TFJ_20210608T123816",
-  "level_product": "L1C",
+  "product_name": "S2A_MSIL2A_20230718T153601_N0509_R111_T19TCG_20230718T220156",
+  "level_product": "L2A",
   "overlapping": 0.0625,
   "tile_size": 512,
   "resampling_method" : "sinc",
