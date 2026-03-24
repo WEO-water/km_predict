@@ -105,11 +105,4 @@ function process() {
 }
 
 
-if [[ -v AWS_REGION && -v AWS_ACCESS_KEY && -v AWS_SECRET_KEY ]]; then
-    config_aws
-    process
-else
-    echo "Expecting the following environment variables to be defined:"
-    echo "  AWS_REGION, AWS_ACCESS_KEY, AWS_SECRET_KEY"
-    exit 1
-fi
+process
